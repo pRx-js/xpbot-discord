@@ -1,0 +1,24 @@
+{
+  "name": "discord-xp",
+  "version": "1.0.0",
+  "description": "Discord XP Bot",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/terorie/discord-xp.git"
+  },
+  "keywords": [
+    "discord",
+    "bot"
+  ],
+  "author": "Richard Patel <me@terorie.dev>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/terorie/discord-xp/issues"
+  },
+  "homepage": "https://github.com/terorie/discord-xp#readme",
+  "dependencies": {
+    "async-redis": "^1.1.7",
+    "discord.js": "^11.4.2"
+  }
+}
