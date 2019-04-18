@@ -6,7 +6,7 @@ const Discord = require('discord.js');
 // Config
 const redisURL = process.env.REDIS_URL;
 const redisPrefix = process.env.REDIS_PREFIX || 'XPBOT_';
-const telegramToken = process.env.TELEGRAM_TOKEN;
+const discordToken = process.env.DISCORD_TOKEN;
 const botChannel = process.env.BOT_CHANNEL;
 const ignoredChannels = (process.env.IGNORED_CHANNELS || '')
     .split(',').map(e => e.trim());
@@ -14,8 +14,13 @@ const groupId = process.env.GROUP_ID;
 const rateLimit = parseInt(process.env.RATE_LIMIT) || 15;
 const key = redisPrefix + groupId;
 
+if (!discordToken) {
+    console.error("Error: No $DISCORD_TOKEN set.")
+    process.exit(1);
+}
+
 if (!groupId) {
-    console.error("No GROUP_ID specified");
+    console.error("Error: No $GROUP_ID set.");
     process.exit(1);
 }
 
@@ -30,7 +35,7 @@ client.on('ready', () => {
 client.on('message', msg => {
     if (!msg.guild)
         return;
-    
+
     if (msg.channel.name == botChannel)
         handleCommand(msg);
     else if (!ignoredChannels.find(e => e.name == msg.channel.name))
@@ -65,7 +70,7 @@ async function displayRank(msg) {
 
     const score = await redis.zscore(key, uid);
     if (!score) {
-        msg.channel.send(`${mention(msg)}, you're not ranked yet 👶`);
+        msg.channel.send(`${msg.author.tag}, you're not ranked yet 👶`);
         return;
     }
 
@@ -75,7 +80,7 @@ async function displayRank(msg) {
     const next = await redis.zrangebyscore(key, parseInt(score) + 2, '+inf', 'withscores', 'limit', 0, 1);
     
     let message = '';
-    message += `${mention(msg)}, `;
+    message += `${msg.author.tag}, `;
     message += `you have ${score} XP`;
     message += '  ◎  ';
     message += `Rank ${rank} / ${total}`;
@@ -119,11 +124,7 @@ async function displayTopRanks(msg, match) {
         msg);
 }
 
-function mention(msg) {
-    return `${msg.author.username}#${msg.author.discriminator}`;
-}
-
-client.login(telegramToken)
+client.login(discordToken)
     .catch(e => {
         console.error(e.message);
         process.exit(1);
